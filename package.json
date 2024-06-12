@@ -1,0 +1,77 @@
+{
+  "name": "multisite-import-export",
+  "version": "0.0.0",
+  "description": "",
+  "private": true,
+  "author": "mcguffin",
+  "license": "GPL-3.0-or-later",
+  "engines": {},
+  "scripts": {
+    "audit": "./vendor/squizlabs/php_codesniffer/bin/phpcs . --report=code --standard=./phpcs-security.ruleset.xml -n -s > ./phpcs-report.txt || exit 0",
+    "audit-fix": "./vendor/squizlabs/php_codesniffer/bin/phpcbf . --standard=./phpcs.ruleset.xml || exit 0",
+    "postinstall": "composer install",
+    "dashicons": "node ./src/run/dashicons.js",
+    "init": "mkdir -p json/acf && mkdir -p json/post-type && mkdir -p json/taxonomy && mkdir -p src/php",
+    "dev": "gulp dev",
+    "i18n": "node src/run/json-i18n.js multisite-import-export",
+    "setversion": "PVER=$(node -e \"console.log(require('./package.json').version);\") && echo \"<?php return '$PVER';\" > ./include/version.php",
+    "rollback": "git reset --hard HEAD~ && git push origin +master"
+  },
+  "browserslist": [
+    "last 3 versions",
+    "> 0.125%"
+  ],
+  "browserify-shim": {
+    "jquery": "global:jQuery",
+    "backbone": "global:Backbone"
+  },
+  "devDependencies": {
+    "@babel/core": "*",
+    "@babel/plugin-proposal-class-properties": "*",
+    "@babel/plugin-proposal-object-rest-spread": "*",
+    "@babel/plugin-transform-react-jsx": "*",
+    "@babel/preset-env": "*",
+    "babelify": "*",
+    "browserify": "*",
+    "browserify-shim": "*",
+    "gulp": "*",
+    "event-stream": "*",
+    "gulp-autoprefixer": "*",
+    "gulp-sass": "*",
+    "gulp-sourcemaps": "*",
+    "uglifyify": "*",
+    "vinyl-buffer": "*",
+    "vinyl-source-stream": "*",
+    "sass": "*",
+    "tinyify": "*"
+  },
+  "dependencies": {},
+  "wpSkeleton": {
+    "components": {
+      "core": {
+        "components": [],
+        "flags": []
+      },
+      "git": {
+        "user": "mcguffin",
+        "remote": "git@github.com:mcguffin/multisite-import-export.git"
+      }
+    },
+    "type": "plugin",
+    "name": "Multisite Import/Export",
+    "slug": "multisite-import-export",
+    "prefix": "wpmu_import_export",
+    "textdomain": "multisite-import-export",
+    "namespace": "MultisiteImportExport",
+    "author": "mcguffin",
+    "author_uri": "https://github.com/mcguffin",
+    "year": 2024
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mcguffin/multisite-import-export.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mcguffin/multisite-import-export/issues"
+  }
+}
