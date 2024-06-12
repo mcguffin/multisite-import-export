@@ -124,9 +124,11 @@ class ImportExport extends \WP_CLI_Command {
 		file_put_contents(
 			"{$outfile_prefix}.json",
 			json_encode( [
-				'blog_id' => (int) $blog->blog_id,
-				'domain'  => $blog->domain,
-				'tables'  => $tables,
+				'blog_id'     => (int) $blog->blog_id,
+				'base_prefix' => $wpdb->base_prefix,
+				'prefix'      => $wpdb->prefix,
+				'domain'      => $blog->domain,
+				'tables'      => $tables,
 			], JSON_PRETTY_PRINT )
 		);
 
@@ -224,7 +226,7 @@ class ImportExport extends \WP_CLI_Command {
 				$source_tables = $source_blog->tables;
 				$target_tables = array_map( function( $table ) use ( $source_blog, $target_blog, $wpdb ) {
 					return str_replace(
-						$wpdb->get_blog_prefix( $source_blog->blog_id ),
+						$source_blog->prefix,
 						$wpdb->get_blog_prefix( $target_blog->blog_id ),
 						$table
 					);
@@ -294,7 +296,7 @@ class ImportExport extends \WP_CLI_Command {
 			switch_to_blog( $target_blog->blog_id );
 			$updir = wp_get_upload_dir();
 			// TOOD: replace uploads, not additive
-			$unzip_cmd = sprintf('mkdir -p %1$s && unzip -o %2$s -d %1$s', $updir['basedir'], $zip_file);
+			$unzip_cmd = sprintf('rm -rf %1$s/* && mkdir -p %1$s && unzip -o %2$s -d %1$s', $updir['basedir'], $zip_file);
 
 			passthru( $unzip_cmd, $result_code );
 			if ( $result_code ) {

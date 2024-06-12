@@ -1,12 +1,12 @@
 {
-	"name": "mcguffin/acf-wp-objects",
-	"description": "Integrating WordPress and ACF",
+	"name": "mcguffin/multisite-import-export",
+	"description": "WPCLI plugin to import and export blogs in a multisite envirnonment.",
 	"license": "GPL-3.0-or-later",
 	"keywords": [
 		"WordPress",
 		"Plugin"
 	],
-	"homepage": "https://github.com/mcguffin/acf-wp-object.git",
+	"homepage": "https://github.com/mcguffin/multisite-import-export.git",
 	"type": "wordpress-plugin",
 	"require": {
 		"composer/installers": "~2.0",

@@ -25,11 +25,13 @@ composer require mcguffin/multisite-import-export
 Configuration Constants
 -----------------------
 
+The plugin uses `passthru`
+
 ### `MUIMEX_MYSQLDUMP_CLI`
 The mysqldump commad to use for export.  
 Default: `mysqldump -u <DB_USER> -p<DB_PASSWORD> -h <DB_HOST>`
 
-#### Example
+#### Examples
 ```php
 // wp-config.php
 define( 'MUIMEX_MYSQLDUMP_CLI', 'mariadbdump -u eddi -psecr3t -h 127.0.0.1' );
@@ -44,7 +46,6 @@ Default: `mysql -u <DB_USER> -p<DB_PASSWORD> -h <DB_HOST>`
 // wp-config.php
 define( 'MUIMEX_MYSQL_CLI', 'mysql -u eddi -psecr3t -h 127.0.0.1' );
 ```
-
 
 WPCLI Commands
 --------------
