@@ -13,7 +13,7 @@ Requires PHP: 8.1
 Text Domain: multisite-import-export
 Domain Path: /languages/
 Network: true
-Update URI: https://github.com/mcguffin/multisite-import-export/raw/master/.wp-release-info.json
+Update URI: https://github.com/mcguffin/multisite-import-export/raw/main/.wp-release-info.json
 */
 
 /*  Copyright 2024 mcguffin
