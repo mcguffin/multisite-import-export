@@ -54,13 +54,16 @@ class ImportExport extends \WP_CLI_Command {
 			mkdir( $target_dir, 0777, true );
 		}
 
+		$target_dir = realpath( $target_dir );
+
 		switch_to_blog( $blog->blog_id );
 		$outfile_prefix = sprintf(
 			'%1$s/%2$s-%3$s',
-			$target_dir,
+			,
 			date('Ymd'),
 			$domain
 		);
+
 		$tables = $wpdb->get_col( $wpdb->prepare(
 			"SHOW TABLES LIKE %s",
 			$wpdb->esc_like( $wpdb->prefix ) . '%'
@@ -71,7 +74,7 @@ class ImportExport extends \WP_CLI_Command {
 				$dump_cmd = sprintf(
 					'%1$s %2$s %3$s --complete-insert --quick --result-file=%4$s.sql',
 					WPMU_MYSQLDUMP_CLI,
-					DB_NAME,
+					escapeshellarg(DB_NAME),
 					implode( ' ', $tables ),
 					$outfile_prefix
 				);
@@ -79,10 +82,10 @@ class ImportExport extends \WP_CLI_Command {
 			} else {
 				$dump_cmd = sprintf(
 					'mysqldump -u %1$s -p%2$s -h %3$s %4$s %5$s --complete-insert --quick --result-file=%6$s.sql',
-					DB_USER,
-					DB_PASSWORD,
-					DB_HOST,
-					DB_NAME,
+					escapeshellarg(DB_USER),
+					escapeshellarg(DB_PASSWORD),
+					escapeshellarg(DB_HOST),
+					escapeshellarg(DB_NAME),
 					implode( ' ', $tables ),
 					$outfile_prefix
 				);
@@ -112,7 +115,7 @@ class ImportExport extends \WP_CLI_Command {
 				$zip,
 				$zip_append
 			);
-
+			WP_CLI::line( $zip_cmd );
 			passthru( $zip_cmd, $result_code );
 			if ( $result_code ) {
 				WP_CLI::error( 'Error dumping uploads' );
