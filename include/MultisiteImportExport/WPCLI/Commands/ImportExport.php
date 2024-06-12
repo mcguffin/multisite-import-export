@@ -59,11 +59,10 @@ class ImportExport extends \WP_CLI_Command {
 		switch_to_blog( $blog->blog_id );
 		$outfile_prefix = sprintf(
 			'%1$s/%2$s-%3$s',
-			,
+			$target_dir,
 			date('Ymd'),
 			$domain
 		);
-
 		$tables = $wpdb->get_col( $wpdb->prepare(
 			"SHOW TABLES LIKE %s",
 			$wpdb->esc_like( $wpdb->prefix ) . '%'
