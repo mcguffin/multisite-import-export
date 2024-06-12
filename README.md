@@ -8,16 +8,16 @@ Installation
 ------------
 
 ### Production (using Github Updater – recommended for Multisite)
- - Install [Andy Fragen's GitHub Updater](https://github.com/afragen/github-updater) first.
- - In WP Admin go to Settings / GitHub Updater / Install Plugin. Enter `/multisite-import-export` as a Plugin-URI.
+ - Head over to [releases](../../releases)
+ - Download 'acf-wp-objects.zip'
+ - Upload and activate it like any other WordPress plugin
+ - AutoUpdate will run as long as the plugin is active
+
+### Development
+ - cd into your plugin directory
+ - $ `git clone git@github.com:mcguffin/multisite-import-export.git`
 
 ### Using Composer
 ```
 composer require /multisite-import-export
 ```
-
-### Development
- - cd into your plugin directory
- - $ `git clone `
- - $ `cd multisite-import-export`
- - $ `npm install && npm run dev`

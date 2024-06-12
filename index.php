@@ -3,7 +3,7 @@
 /*
 Plugin Name: Multisite Import&#x2F;Export
 Plugin URI: http://wordpress.org/
-Description: Enter description here.
+Description: WPCLI only plugin to import and export blogs in a multisite envirnonment.
 Author: mcguffin
 Version: 0.0.1
 Author URI: https://github.com/mcguffin
@@ -12,6 +12,8 @@ Requires WP: 4.8
 Requires PHP: 5.6
 Text Domain: multisite-import-export
 Domain Path: /languages/
+Network: true
+Update URI: https://github.com/mcguffin/multisite-import-export/raw/master/.wp-release-info.json
 */
 
 /*  Copyright 2024 mcguffin
@@ -45,8 +47,6 @@ if ( ! defined('ABSPATH') ) {
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'include/autoload.php';
 
-Core\Core::instance( __FILE__ );
-
-if ( is_admin() || defined( 'DOING_AJAX' ) ) {
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	WPCLI\WPCLI::instance();
 }
-

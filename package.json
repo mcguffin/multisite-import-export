@@ -21,30 +21,8 @@
     "last 3 versions",
     "> 0.125%"
   ],
-  "browserify-shim": {
-    "jquery": "global:jQuery",
-    "backbone": "global:Backbone"
-  },
-  "devDependencies": {
-    "@babel/core": "*",
-    "@babel/plugin-proposal-class-properties": "*",
-    "@babel/plugin-proposal-object-rest-spread": "*",
-    "@babel/plugin-transform-react-jsx": "*",
-    "@babel/preset-env": "*",
-    "babelify": "*",
-    "browserify": "*",
-    "browserify-shim": "*",
-    "gulp": "*",
-    "event-stream": "*",
-    "gulp-autoprefixer": "*",
-    "gulp-sass": "*",
-    "gulp-sourcemaps": "*",
-    "uglifyify": "*",
-    "vinyl-buffer": "*",
-    "vinyl-source-stream": "*",
-    "sass": "*",
-    "tinyify": "*"
-  },
+  "browserify-shim": {},
+  "devDependencies": {},
   "dependencies": {},
   "wpSkeleton": {
     "components": {
@@ -55,6 +33,14 @@
       "git": {
         "user": "mcguffin",
         "remote": "git@github.com:mcguffin/multisite-import-export.git"
+      },
+      "cli": {
+        "components": {
+          "import-export": {
+            "flags": []
+          }
+        },
+        "flags": []
       }
     },
     "type": "plugin",
@@ -73,5 +59,27 @@
   },
   "bugs": {
     "url": "https://github.com/mcguffin/multisite-import-export/issues"
+  },
+  "wporg": {
+    "steps": [
+      "build",
+      "git",
+      "github"
+    ],
+    "type": "plugin",
+    "build": {
+      "prebuild": [
+        "wp i18n make-pot . languages/multisite-import-export.pot --domain=multisite-import-export --exclude=tmp"
+      ],
+      "build": []
+    },
+    "git": {
+      "host": "github.com",
+      "user": "mcguffin"
+    },
+    "wporg": {
+      "assets": ".wporg",
+      "svn_user": "podpirate"
+    }
   }
 }
