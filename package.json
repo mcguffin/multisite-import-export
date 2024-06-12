@@ -7,13 +7,6 @@
   "license": "GPL-3.0-or-later",
   "engines": {},
   "scripts": {
-    "audit": "./vendor/squizlabs/php_codesniffer/bin/phpcs . --report=code --standard=./phpcs-security.ruleset.xml -n -s > ./phpcs-report.txt || exit 0",
-    "audit-fix": "./vendor/squizlabs/php_codesniffer/bin/phpcbf . --standard=./phpcs.ruleset.xml || exit 0",
-    "postinstall": "composer install",
-    "dashicons": "node ./src/run/dashicons.js",
-    "init": "mkdir -p json/acf && mkdir -p json/post-type && mkdir -p json/taxonomy && mkdir -p src/php",
-    "dev": "gulp dev",
-    "i18n": "node src/run/json-i18n.js multisite-import-export",
     "setversion": "PVER=$(node -e \"console.log(require('./package.json').version);\") && echo \"<?php return '$PVER';\" > ./include/version.php",
     "rollback": "git reset --hard HEAD~ && git push origin +master"
   },
@@ -68,10 +61,10 @@
     ],
     "type": "plugin",
     "build": {
-      "prebuild": [
-        "wp i18n make-pot . languages/multisite-import-export.pot --domain=multisite-import-export --exclude=tmp"
-      ],
-      "build": []
+      "prebuild": [],
+      "build": [
+        "npm run setversion"
+      ]
     },
     "git": {
       "host": "github.com",

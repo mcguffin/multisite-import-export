@@ -3,6 +3,7 @@
 namespace MultisiteImportExport\WPCLI\Commands;
 
 use MultisiteImportExport\Helper;
+use WP_CLI;
 
 class ImportExport extends \WP_CLI_Command {
 
@@ -66,15 +67,26 @@ class ImportExport extends \WP_CLI_Command {
 		) );
 		if ( ! $assoc_args['skip_db'] ) {
 			WP_CLI::line( 'Dump database');
-			$dump_cmd = sprintf(
-				'mysqldump -u %1$s -p%2$s -h %3$s %4$s %5$s --complete-insert --quick --result-file=%6$s.sql',
-				DB_USER,
-				DB_PASSWORD,
-				DB_HOST,
-				DB_NAME,
-				implode( ' ', $tables ),
-				$outfile_prefix
-			);
+			if ( defined( 'MUIMEX_MYSQLDUMP_CLI' ) ) {
+				$dump_cmd = sprintf(
+					'%1$s %2$s %3$s --complete-insert --quick --result-file=%4$s.sql',
+					WPMU_MYSQLDUMP_CLI,
+					DB_NAME,
+					implode( ' ', $tables ),
+					$outfile_prefix
+				);
+
+			} else {
+				$dump_cmd = sprintf(
+					'mysqldump -u %1$s -p%2$s -h %3$s %4$s %5$s --complete-insert --quick --result-file=%6$s.sql',
+					DB_USER,
+					DB_PASSWORD,
+					DB_HOST,
+					DB_NAME,
+					implode( ' ', $tables ),
+					$outfile_prefix
+				);
+			}
 
 			passthru( $dump_cmd, $result_code );
 			if ( $result_code ) {
@@ -224,11 +236,11 @@ class ImportExport extends \WP_CLI_Command {
 				file_put_contents( $sql_tmp_file, $sql );
 				$sql_file = $sql_tmp_file;
 			}
-			if ( defined('BSB_MYSQL_CLI') ) {
+			if ( defined('MUIMEX_MYSQL_CLI') ) {
 				// allow custom mysql command
 				$mysql_cmd = sprintf(
 					'%1$s %2$s < %3$s',
-					BSB_MYSQL_CLI,
+					MUIMEX_MYSQL_CLI,
 					DB_NAME,
 					$sql_file
 				);
@@ -281,7 +293,7 @@ class ImportExport extends \WP_CLI_Command {
 
 			switch_to_blog( $target_blog->blog_id );
 			$updir = wp_get_upload_dir();
-
+			// TOOD: replace uploads, not additive
 			$unzip_cmd = sprintf('mkdir -p %1$s && unzip -o %2$s -d %1$s', $updir['basedir'], $zip_file);
 
 			passthru( $unzip_cmd, $result_code );
@@ -297,8 +309,6 @@ class ImportExport extends \WP_CLI_Command {
 
 			switch_to_blog( $target_blog->blog_id );
 
-			require_once dirname(__DIR__) . '/wp-cli-bsb-url-replacer/URLReplacer.php';
-
 			Helper\URLReplacer::replace( $source_blog->domain, $target_blog->domain );
 			Helper\URLReplacer::replace_blog_id( $source_blog->blog_id, $target_blog->blog_id );
 
@@ -308,11 +318,14 @@ class ImportExport extends \WP_CLI_Command {
 		if ( ! $assoc_args['skip_authors'] ) {
 
 			switch_to_blog( $target_blog->blog_id );
-			$author_id =
+			$author_id = $assoc_args['author'];
+			if ( ! $author_id ) {
+				$author_id = $this->get_author_id( $target_blog->blog_id );
+			}
 			$wpdb->query(
 				$wpdb->prepare(
 					"UPDATE {$wpdb->posts} SET post_author = %s;",
-					$this->get_first_author_id( $target_blog->blog_id )
+					$author_id
 				)
 			);
 
@@ -321,7 +334,7 @@ class ImportExport extends \WP_CLI_Command {
 	}
 
 	/**
-	 *
+	 *	@param int $blog_id
 	 */
 	private function get_author_id( $blog_id = 0 ) {
 		$try = [
@@ -331,12 +344,13 @@ class ImportExport extends \WP_CLI_Command {
 		foreach ( $try as $attempt ) {
 			$users = get_users( $attempt );
 			if ( count( $users ) ) {
-				return array_shift($users);
+				return (int) array_shift($users);
 			}
 		}
 		$admins = get_super_admins();
 		if ( count( $admins ) ) {
-			return array_shift( $admins );
+			$user = get_user_by( 'login', array_shift( $admins ) );
+			return (int) $user->ID;
 		}
 		return 0;
 	}
