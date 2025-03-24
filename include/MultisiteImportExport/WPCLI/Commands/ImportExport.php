@@ -56,6 +56,8 @@ class ImportExport extends \WP_CLI_Command {
 
 		$target_dir = realpath( $target_dir );
 
+		do_action('muimex/before_export', $blog->blog_id, $target_dir );
+
 		switch_to_blog( $blog->blog_id );
 		$outfile_prefix = sprintf(
 			'%1$s/%2$s-%3$s',
@@ -134,7 +136,9 @@ class ImportExport extends \WP_CLI_Command {
 			], JSON_PRETTY_PRINT )
 		);
 
-		WP_CLI::success( sprintf('Exported %s to %s', $domain, realpath( $target_dir ) ) );
+		do_action('muimex/after_export', $blog->blog_id, $target_dir );
+
+		WP_CLI::success( sprintf('Exported %s to %s', $domain, $target_dir ) );
 	}
 
 	/**
@@ -195,17 +199,20 @@ class ImportExport extends \WP_CLI_Command {
 			return;
 		}
 
-		$target_blog = $wpdb->get_row( $wpdb->prepare("SELECT blog_id, domain FROM $wpdb->blogs WHERE domain = %s", $args[0] ) );
+		do_action('muimex/before_import', $args[0], $assoc_args );
 
+		$target_blog = $wpdb->get_row( $wpdb->prepare("SELECT blog_id, domain FROM $wpdb->blogs WHERE domain = %s", $args[0] ) );
 
 		if ( $target_blog ) {
 			WP_CLI::line( sprintf( 'Updating blog %d', $target_blog->blog_id ) );
+			do_action('muimex/import/update_blog', $target_blog->blog_id );
 		} else {
 			WP_CLI::line( sprintf( 'Creating new %s', $domain ) );
 			$target_blog = (object) [
 				'blog_id' => (int) wp_insert_site( [ 'domain' => $domain ] ),
 				'domain'  => $domain,
 			];
+			do_action('muimex/import/created_blog', $target_blog->blog_id );
 		}
 
 		$source_blog->blog_id = (int) $source_blog->blog_id;
@@ -235,10 +242,10 @@ class ImportExport extends \WP_CLI_Command {
 
 				}, $source_blog->tables );
 
-				$sql = str_replace( $source_tables, $target_tables, $sql );
+				$sql          = str_replace( $source_tables, $target_tables, $sql );
 				$sql_tmp_file = tempnam(sys_get_temp_dir(),'bsb'.$target_blog->blog_id );
 				file_put_contents( $sql_tmp_file, $sql );
-				$sql_file = $sql_tmp_file;
+				$sql_file     = $sql_tmp_file;
 			}
 			if ( defined('MUIMEX_MYSQL_CLI') ) {
 				// allow custom mysql command
@@ -252,12 +259,16 @@ class ImportExport extends \WP_CLI_Command {
 				// default mysql with user and pwassword
 				$mysql_cmd = sprintf(
 					'mysql -u%1$s -p%2$s %3$s < %4$s',
-					DB_USER,
-					DB_PASSWORD,
-					DB_NAME,
+					escapeshellarg(DB_USER),
+					escapeshellarg(DB_PASSWORD),
+					escapeshellarg(DB_NAME),
 					$sql_file
 				);
 			}
+			$mysql_cmd = apply_filters('muimex/import/sql_command', $mysql_cmd, $target_blog->blog_id );
+
+			do_action('muimex/import/db', $target_blog->blog_id, $sql_file );
+
 			passthru( $mysql_cmd, $result_code );
 			if ( $result_code ) {
 				WP_CLI::error( 'Error importing database' );
@@ -335,6 +346,8 @@ class ImportExport extends \WP_CLI_Command {
 
 			restore_current_blog();
 		}
+
+		do_action('muimex/after_import', $target_blog->blog_id );
 	}
 
 	/**
