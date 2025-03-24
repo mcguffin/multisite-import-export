@@ -5,7 +5,7 @@ Plugin Name: Multisite Import&#x2F;Export
 Plugin URI: http://wordpress.org/
 Description: WPCLI plugin for import and export blogs in a multisite envirnonment.
 Author: mcguffin
-Version: 0.1.0
+Version: 0.1.1
 Author URI: https://github.com/mcguffin
 License: GPL3
 Requires WP: 6.0

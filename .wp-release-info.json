@@ -1,9 +1,9 @@
 {
   "id": "https://github.com/mcguffin/multisite-import-export/raw/main/.wp-release-info.json",
   "slug": "multisite-import-export",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "url": "http://wordpress.org/",
-  "package": "https://github.com/mcguffin/multisite-import-export/releases/download/0.1.0/multisite-import-export.zip",
+  "package": "https://github.com/mcguffin/multisite-import-export/releases/download/0.1.1/multisite-import-export.zip",
   "tested": "4.9",
   "requires_php": "5.3"
 }
