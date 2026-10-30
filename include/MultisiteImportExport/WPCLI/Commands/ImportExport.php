@@ -324,7 +324,7 @@ class ImportExport extends \WP_CLI_Command {
 
 			switch_to_blog( $target_blog->blog_id );
 
-			Helper\URLReplacer::replace( $source_blog->domain, $target_blog->domain );
+			Helper\URLReplacer::replace_host( $source_blog->domain, $target_blog->domain );
 			Helper\URLReplacer::replace_blog_id( $source_blog->blog_id, $target_blog->blog_id );
 
 			restore_current_blog();

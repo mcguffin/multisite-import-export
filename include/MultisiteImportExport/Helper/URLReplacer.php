@@ -27,8 +27,9 @@ class URLReplacer {
 		global $wpdb;
 		return $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT option_id, option_name, option_value FROM {$wpdb->options} WHERE option_value LIKE %s",
-				'%' . $wpdb->esc_like(  "://{$hostname}" ) . '%'
+				"SELECT option_id, option_name, option_value FROM {$wpdb->options} WHERE option_value LIKE %s OR option_value LIKE %s",
+				'%' . $wpdb->esc_like(  "://{$hostname}" ) . '%',
+				'%' . $wpdb->esc_like( ":\\/\\/{$hostname}" ) . '%'
 			)
 		);
 	}
@@ -41,8 +42,9 @@ class URLReplacer {
 		global $wpdb;
 		return $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT ID, post_name, post_content FROM {$wpdb->posts} WHERE post_content LIKE %s",
-				'%' . $wpdb->esc_like( "://{$hostname}" ) . '%'
+				"SELECT ID, post_content FROM {$wpdb->posts} WHERE post_content LIKE %s OR post_content LIKE %s",
+				'%' . $wpdb->esc_like( "://{$hostname}" ) . '%',
+				'%' . $wpdb->esc_like( ":\\/\\/{$hostname}" ) . '%'
 			)
 		);
 	}
@@ -55,8 +57,9 @@ class URLReplacer {
 		global $wpdb;
 		return $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT term_taxonomy_id, description FROM {$wpdb->term_taxonomy} WHERE description LIKE %s",
-				'%' . $wpdb->esc_like( "://{$hostname}" ) . '%'
+				"SELECT term_taxonomy_id, description FROM {$wpdb->term_taxonomy} WHERE description LIKE %s OR description LIKE %s",
+				'%' . $wpdb->esc_like( "://{$hostname}" ) . '%',
+				'%' . $wpdb->esc_like( ":\\/\\/{$hostname}" ) . '%'
 			)
 		);
 	}
@@ -69,8 +72,9 @@ class URLReplacer {
 		global $wpdb;
 		return $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT meta_id, post_id, meta_key, meta_value FROM {$wpdb->postmeta} WHERE meta_value LIKE %s",
-				'%' . $wpdb->esc_like("://{$hostname}") . '%'
+				"SELECT meta_id, meta_value FROM {$wpdb->postmeta} WHERE meta_value LIKE %s OR meta_value LIKE %s",
+				'%' . $wpdb->esc_like("://{$hostname}") . '%',
+				'%' . $wpdb->esc_like( ":\\/\\/{$hostname}" ) . '%'
 			)
 		);
 	}
@@ -83,8 +87,9 @@ class URLReplacer {
 		global $wpdb;
 		return $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT meta_id, meta_key, meta_value FROM {$wpdb->termmeta} WHERE meta_value LIKE %s",
-				'%' . $wpdb->esc_like( "://{$hostname}" ) . '%'
+				"SELECT meta_id, meta_value FROM {$wpdb->termmeta} WHERE meta_value LIKE %s OR meta_value LIKE %s",
+				'%' . $wpdb->esc_like( "://{$hostname}" ) . '%',
+				'%' . $wpdb->esc_like( ":\\/\\/{$hostname}" ) . '%'
 			)
 		);
 	}
@@ -93,7 +98,7 @@ class URLReplacer {
 	 *	@param string $hostname
 	 *	@return assoc [ 'options' => [ ... ], 'posts' => [...], 'terms' => [...], 'postmeta' => [...], 'termmeta' => [...] ]
 	 */
-	public static function replace( $hostname, $new_hostname ) {
+	public static function replace_host( $hostname, $new_hostname ) {
 		if ( $hostname === $new_hostname ) {
 			return false;
 		}
@@ -214,8 +219,10 @@ class URLReplacer {
 		global $wpdb;
 		return $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT option_id, option_name, option_value FROM {$wpdb->options} WHERE option_value LIKE %s",
-				'%' . $wpdb->esc_like(  "/wp-content/uploads/sites/{$blog_id}/" ) . '%'
+				"SELECT option_id, option_name, option_value FROM {$wpdb->options} WHERE option_value LIKE %s OR option_value LIKE %s",
+				'%' . $wpdb->esc_like(  "/wp-content/uploads/sites/{$blog_id}/" ) . '%',
+				'%' . $wpdb->esc_like( "\\/wp-content\\/uploads\\/sites\\/{$blog_id}\\/" ) . '%'
+
 			)
 		);
 	}
@@ -228,8 +235,9 @@ class URLReplacer {
 		global $wpdb;
 		return $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT ID, post_name, post_content FROM {$wpdb->posts} WHERE post_content LIKE %s",
-				'%' . $wpdb->esc_like(  "/wp-content/uploads/sites/{$blog_id}/" ) . '%'
+				"SELECT ID, post_name, post_content FROM {$wpdb->posts} WHERE post_content LIKE %s OR post_content LIKE %s",
+				'%' . $wpdb->esc_like(  "/wp-content/uploads/sites/{$blog_id}/" ) . '%',
+				'%' . $wpdb->esc_like( "\\/wp-content\\/uploads\\/sites\\/{$blog_id}\\/" ) . '%'
 			)
 		);
 	}
@@ -242,8 +250,9 @@ class URLReplacer {
 		global $wpdb;
 		return $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT term_taxonomy_id, description FROM {$wpdb->term_taxonomy} WHERE description LIKE %s",
-				'%' . $wpdb->esc_like(  "/wp-content/uploads/sites/{$blog_id}/" ) . '%'
+				"SELECT term_taxonomy_id, description FROM {$wpdb->term_taxonomy} WHERE description LIKE %s OR description LIKE %s",
+				'%' . $wpdb->esc_like(  "/wp-content/uploads/sites/{$blog_id}/" ) . '%',
+				'%' . $wpdb->esc_like( "\\/wp-content\\/uploads\\/sites\\/{$blog_id}\\/" ) . '%'
 			)
 		);
 	}
@@ -256,8 +265,9 @@ class URLReplacer {
 		global $wpdb;
 		return $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT meta_id, post_id, meta_key, meta_value FROM {$wpdb->postmeta} WHERE meta_value LIKE %s",
-				'%' . $wpdb->esc_like(  "/wp-content/uploads/sites/{$blog_id}/" ) . '%'
+				"SELECT meta_id, post_id, meta_key, meta_value FROM {$wpdb->postmeta} WHERE meta_value LIKE %s OR meta_value LIKE %s",
+				'%' . $wpdb->esc_like(  "/wp-content/uploads/sites/{$blog_id}/" ) . '%',
+				'%' . $wpdb->esc_like( "\\/wp-content\\/uploads\\/sites\\/{$blog_id}\\/" ) . '%'
 			)
 		);
 	}
@@ -270,8 +280,9 @@ class URLReplacer {
 		global $wpdb;
 		return $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT meta_id, meta_key, meta_value FROM {$wpdb->termmeta} WHERE meta_value LIKE %s",
-				'%' . $wpdb->esc_like(  "/wp-content/uploads/sites/{$blog_id}/" ) . '%'
+				"SELECT meta_id, meta_key, meta_value FROM {$wpdb->termmeta} WHERE meta_value LIKE %s OR meta_value LIKE %s",
+				'%' . $wpdb->esc_like(  "/wp-content/uploads/sites/{$blog_id}/" ) . '%',
+				'%' . $wpdb->esc_like( "\\/wp-content\\/uploads\\/sites\\/{$blog_id}\\/" ) . '%'
 			)
 		);
 	}
@@ -301,19 +312,31 @@ class URLReplacer {
 	 *	@param string $replace
 	 */
 	private static function replace_value( &$value, $search, $replace ) {
-		$serialized = false;
+
+		$serialized = $jsoned = false;
+
 		if ( is_string( $value ) ) {
 			$unserialized_value = maybe_unserialize( $value );
 			if ( $unserialized_value !== $value ) {
 				$value = $unserialized_value;
 				$serialized = true;
+			} else if ( preg_match( '/^[\{\[]/', $value ) ) {
+				$dejsoned_value = json_decode( $value );
+				if ( ! is_null( $dejsoned_value ) ) {
+					$value = $dejsoned_value;
+					$jsoned = true;
+				}
 			}
 		}
+
 		if ( is_array( $value ) ) {
-			foreach ( $value as $k => &$v ) {
-				$v = self::replace_value( $v, $search, $replace );
+			$new_value = [];
+			foreach ( $value as $k => $v ) {
+				$k = str_replace( $search, $replace, $k );
+				$new_value[$k] = self::replace_value( $v, $search, $replace );
 			}
-		} else if ( is_object( $value ) && ( $value instanceof stdClass ) ) {
+			$value = $new_value;
+		} else if ( is_object( $value ) && ( $value instanceof \stdClass ) ) {
 			foreach ( array_keys( get_object_vars( $value ) ) as $k ) {
 				$value->$k = self::replace_value( $value->$k, $search, $replace );
 			}
@@ -323,6 +346,10 @@ class URLReplacer {
 		if ( $serialized ) {
 			$value = serialize( $value );
 		}
+		if ( $jsoned ) {
+			$value = wp_json_encode( $value );
+		}
+
 		return $value;
 	}
 
